@@ -39,7 +39,7 @@ def detect_browser():
     """
     components.html(detect_script)
 
-def change_button_style(widget_label, title, content):
+def change_button_style(widget_label:str, title:str, content:str) -> None:
     """ Modified from:
     https://discuss.streamlit.io/t/issues-with-background-colour-for-buttons/38723/2
     Args:
@@ -53,7 +53,7 @@ def change_button_style(widget_label, title, content):
         for (var i = 0; i < elements.length; i++) {{
             if (elements[i].innerText == '{widget_label}') {{
                 elements[i].style.padding = '7px';
-                elements[i].style.margin = '0px';
+                elements[i].style.margin = '15px';
                 elements[i].style.borderRadius = '5px';
                 elements[i].style.border = '1px solid #e0e0e0';
                 elements[i].style.backgroundColor = '#f0f4f8';
