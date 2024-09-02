@@ -49,7 +49,6 @@ class ChatBotApp():
             # Runs methods alphabetically, not ideal
             for method in dir(self): 
                 if callable(getattr(self, method)) and not method.startswith("__"):
-                    print(method)
                     getattr(self, method)()
 
 
