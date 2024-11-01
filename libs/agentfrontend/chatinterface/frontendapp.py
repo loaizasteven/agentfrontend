@@ -58,6 +58,8 @@ class ChatBotApp(BaseModel):
 
 
 if __name__=="__main__":
-    ui = ChatBotApp()
+    ui = ChatBotApp(
+        title='Insurance Agent'
+    )
     ui(False)
     
