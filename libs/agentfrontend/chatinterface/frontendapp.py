@@ -5,6 +5,7 @@ import sys
 import uuid
 
 from pydantic import BaseModel
+from typing import Optional
 
 script_dir = osp.dirname(__file__)
 sys.path.insert(0, osp.dirname(script_dir))
@@ -13,6 +14,7 @@ from _ui.generaloptions import change_button_style, detect_browser
 
 class ChatBotApp(BaseModel):
     title:str = 'My First LLM Chat'
+    description: Optional[str]= None
     buttons: tuple = (
         ('Button 1', 'This is my short instruction content, with multiline instruction'),
         ('Button 2', 'This is my short instruction content, with multiline instruction'),
@@ -28,6 +30,7 @@ class ChatBotApp(BaseModel):
     def _render(self):
         "Renders the chatbot UI"
         st.title(self.title)
+        st.write(self.description)
 
         cols = st.columns(len(self.buttons))
         for i, entry in enumerate(self.buttons):   
