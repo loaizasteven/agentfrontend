@@ -24,8 +24,8 @@ class ChatBotApp():
         st.title(self.title)
 
         cols = st.columns(len(self.buttons))
-        for i, entry in enumerate(self.buttons):
-            cols[i].button(entry[0], key=uuid.uuid4())
+        for i, entry in enumerate(self.buttons):   
+            cols[i].button(entry[0], key=f"button_{i}")
             change_button_style(entry[0], entry[0], entry[1])
 
         prompt = st.chat_input("Say something")
