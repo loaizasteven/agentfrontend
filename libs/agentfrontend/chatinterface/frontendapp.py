@@ -62,7 +62,11 @@ class ChatBotApp(BaseModel):
 
 if __name__=="__main__":
     ui = ChatBotApp(
-        title='Insurance Agent'
+        title='🚗 Claims AI-Assistant',
+        description= """
+        An AI-Powered Claims Assistant designed to help adjusters in contact centers quickly and effectively
+        respond to customers needs within a single application.
+        """
     )
     ui(False)
     
