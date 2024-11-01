@@ -11,7 +11,7 @@ sys.path.insert(0, osp.dirname(script_dir))
 from _ui.generaloptions import change_button_style, detect_browser
 
 
-class ChatBotApp():
+class ChatBotApp(BaseModel):
     title:str = 'My First LLM Chat'
     buttons: tuple = (
         ('Button 1', 'This is my short instruction content, with multiline instruction'),
@@ -52,10 +52,9 @@ class ChatBotApp():
             self._render
             self._zcheck
         else:
-            # Runs methods alphabetically, not ideal
-            for method in dir(self): 
-                if callable(getattr(self, method)) and not method.startswith("__"):
-                    getattr(self, method)()
+            self._apppagedefault()
+            self._render()
+            self._zcheck()
 
 
 if __name__=="__main__":
