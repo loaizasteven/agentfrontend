@@ -19,6 +19,12 @@ class ChatBotApp():
         ('Button 3', 'This is my short instruction content, with multiline instruction'),
     )
 
+    def _apppagedefault(self, title="Chat Bot App", icon="🦜"):
+        st.set_page_config(
+            page_title = title,
+            page_icon = icon
+        )
+
     def _render(self):
         "Renders the chatbot UI"
         st.title(self.title)
