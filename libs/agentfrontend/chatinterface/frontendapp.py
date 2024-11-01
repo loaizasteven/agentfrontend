@@ -66,7 +66,12 @@ if __name__=="__main__":
         description= """
         An AI-Powered Claims Assistant designed to help adjusters in contact centers quickly and effectively
         respond to customers needs within a single application.
-        """
+        """,
+        buttons=(
+        ('Help me with claim', 'Provides the adjuster with an opening remark to invoke the beginning of a conversation'),
+        ('Document Intelligence', 'Provides a summary of an uploaded image and extracts relevant claim information'),
+        ('Summarize', 'Help summarize the current conversation between the adjuster and the AI assistant.'),
+    )
     )
     ui(False)
     
