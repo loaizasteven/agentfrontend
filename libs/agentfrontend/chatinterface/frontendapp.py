@@ -70,7 +70,7 @@ if __name__=="__main__":
         respond to customers needs within a single application.
         """,
         buttons=(
-        ('Help me with claim', 'Provides the adjuster with an opening remark to invoke the beginning of a conversation'),
+        ('Help me with claim', 'Provides the adjuster helpful info to begin the conversation'),
         ('Document Intelligence', 'Provides a summary of an uploaded image and extracts relevant claim information'),
         ('Summarize', 'Help summarize the current conversation between the adjuster and the AI assistant.'),
     )

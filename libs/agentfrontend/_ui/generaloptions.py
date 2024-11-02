@@ -44,9 +44,11 @@ def change_button_style(widget_label:str, title:str, content:str) -> None:
     https://discuss.streamlit.io/t/issues-with-background-colour-for-buttons/38723/2
     Args:
         widget_label
-        title
-        content
+        title: max limit 21 characters
+        content: max limit 86 characters
     """
+    assert len(title) <= 21 and len(content) <= 86, 'Button Content Exceeds Max Limit'
+
     button_style = f"""
     <script>
         var elements = window.parent.document.querySelectorAll('button');
@@ -54,6 +56,7 @@ def change_button_style(widget_label:str, title:str, content:str) -> None:
             if (elements[i].innerText == '{widget_label}') {{
                 elements[i].style.padding = '7px';
                 elements[i].style.margin = '0px';
+                elements[i].style.height = '100px';
                 elements[i].style.borderRadius = '5px';
                 elements[i].style.border = '1px solid #e0e0e0';
                 elements[i].style.backgroundColor = '#f0f4f8';
