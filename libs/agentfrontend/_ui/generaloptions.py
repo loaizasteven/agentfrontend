@@ -72,3 +72,27 @@ def change_button_style(widget_label:str, title:str, content:str) -> None:
 
     components.html(button_style, height=0, width=0)
     
+def change_button_style_image(widget_label:str, title:str, imageurl:str) -> None:
+    """
+    Args:
+        widget_label
+        title
+        imageurl
+    """
+    button_style = f"""
+    <script>
+        var elements = window.parent.document.querySelectorAll('button');
+        for (var i = 0; i < elements.length; i++) {{
+            if (elements[i].innerText == '{widget_label}') {{
+                elements[i].style.padding = '5px';
+                elements[i].style.margin = '0px';
+                elements[i].style.borderRadius = '5px';
+                elements[i].style.border = '1px solid #e0e0e0';
+                elements[i].style.backgroundColor = '#f0f4f8';
+                elements[i].innerHTML = '<span><img src="{imageurl}" height = "150"/><p></p><p>{title}</p></span>';
+            }}
+        }}
+    </script>
+    """
+
+    components.html(button_style, height=0, width=0)
