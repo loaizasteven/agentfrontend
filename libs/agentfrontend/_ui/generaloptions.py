@@ -47,8 +47,12 @@ def change_button_style(widget_label:str, title:str, content:str) -> None:
         title: max limit 21 characters
         content: max limit 86 characters
     """
-    assert len(title) <= 21 and len(content) <= 86, 'Button Content Exceeds Max Limit'
+    tlimit = 21
+    climit = 86
+    assert len(title) <= tlimit and len(content) <= climit, 'Button Content Exceeds Max Limit'
 
+    # Pad parameters with white space for uniform button shape when window size changes
+    # TODO: Additional work needed to preserve button size
     button_style = f"""
     <script>
         var elements = window.parent.document.querySelectorAll('button');
@@ -60,7 +64,7 @@ def change_button_style(widget_label:str, title:str, content:str) -> None:
                 elements[i].style.borderRadius = '5px';
                 elements[i].style.border = '1px solid #e0e0e0';
                 elements[i].style.backgroundColor = '#f0f4f8';
-                elements[i].innerHTML = '<span><h4 style="text-align: left; font-size: 15px;">✨{title}</h4><p style="text-align:left; font-size:11px;">{content}</p></span>';
+                elements[i].innerHTML = '<span><h4 style="text-align: left; font-size: 15px; white-space:pre-wrap;">✨{title.ljust(tlimit)}</h4><p style="text-align:left; font-size:11px; white-space:pre-wrap;">{content.ljust(climit)}</p></span>';
             }}
         }}
     </script>
