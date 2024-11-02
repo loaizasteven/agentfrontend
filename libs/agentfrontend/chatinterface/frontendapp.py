@@ -9,7 +9,7 @@ from typing import Optional
 
 script_dir = osp.dirname(__file__)
 sys.path.insert(0, osp.dirname(script_dir))
-from _ui.generaloptions import change_button_style, detect_browser
+from _ui.generaloptions import change_button_style, detect_browser, change_button_style_image
 
 
 class ChatBotApp(BaseModel):
@@ -21,12 +21,17 @@ class ChatBotApp(BaseModel):
         ('Button 2', 'This is my short instruction content, with multiline instruction'),
         ('Button 3', 'This is my short instruction content, with multiline instruction'),
     )
+    buttontype: str = 'text'
 
-    def _apppagedefault(self, title="Chat Bot App", icon="🦜"):
+    def _apppagedefault(self, title="Claim AI", icon="🦜"):
         st.set_page_config(
             page_title = title,
             page_icon = icon
         )
+
+        with st.sidebar:
+            st.title('🦜 Claim AI')
+            st.write("⛶  New Conversation")
 
     def _render(self):
         "Renders the chatbot UI"
@@ -34,12 +39,13 @@ class ChatBotApp(BaseModel):
         st.caption(self.caption)
         st.write(self.description)
 
+        styling = change_button_style if self.buttontype == 'text' else change_button_style_image
         cols = st.columns(len(self.buttons))
         for i, entry in enumerate(self.buttons):   
             cols[i].button(entry[0], key=f"button_{i}")
-            change_button_style(entry[0], entry[0], entry[1])
+            styling(entry[0], entry[0], entry[1])
 
-        prompt = st.chat_input("Say something")
+        prompt = st.chat_input("How can I help?")
         if prompt:
             with st.chat_message("user"):
                 st.write(f"User has sent the following prompt: {prompt}")
@@ -64,16 +70,17 @@ class ChatBotApp(BaseModel):
 
 if __name__=="__main__":
     ui = ChatBotApp(
-        title='🚗 Claims AI-Assistant',
+        title='Claims AI-Assistant',
         description= """
         Description: An AI-Powered Claims Assistant designed to help adjusters in contact centers quickly and effectively
         respond to customers needs within a single application.
         """,
         buttons=(
-        ('Help me with claim', 'Provides the adjuster helpful info to begin the conversation'),
-        ('Document Intelligence', 'Provides a summary of an uploaded image and extracts relevant claim information'),
-        ('Summarize', 'Help summarize the current conversation between the adjuster and the AI assistant.'),
-    )
+            ('Claim-oween', 'https://images.pexels.com/photos/3095465/pexels-photo-3095465.png'),
+            ('Document Intelligence', 'https://images.pexels.com/photos/1109541/pexels-photo-1109541.jpeg'),
+            ('Summarize', 'https://images.pexels.com/photos/699122/pexels-photo-699122.jpeg'),
+        ),
+        buttontype='image'
     )
     ui(False)
     
