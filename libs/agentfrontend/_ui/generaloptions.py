@@ -44,9 +44,15 @@ def change_button_style(widget_label:str, title:str, content:str) -> None:
     https://discuss.streamlit.io/t/issues-with-background-colour-for-buttons/38723/2
     Args:
         widget_label
-        title
-        content
+        title: max limit 21 characters
+        content: max limit 86 characters
     """
+    tlimit = 21
+    climit = 86
+    assert len(title) <= tlimit and len(content) <= climit, 'Button Content Exceeds Max Limit'
+
+    # Pad parameters with white space for uniform button shape when window size changes
+    # TODO: Additional work needed to preserve button size
     button_style = f"""
     <script>
         var elements = window.parent.document.querySelectorAll('button');
@@ -54,10 +60,11 @@ def change_button_style(widget_label:str, title:str, content:str) -> None:
             if (elements[i].innerText == '{widget_label}') {{
                 elements[i].style.padding = '7px';
                 elements[i].style.margin = '0px';
+                elements[i].style.height = '100px';
                 elements[i].style.borderRadius = '5px';
                 elements[i].style.border = '1px solid #e0e0e0';
                 elements[i].style.backgroundColor = '#f0f4f8';
-                elements[i].innerHTML = '<span><h4 style="text-align: left; font-size: 15px;">✨{title}</h4><p style="text-align:left; font-size:11px;">{content}</p></span>';
+                elements[i].innerHTML = '<span><h4 style="text-align: left; font-size: 15px; white-space:pre-wrap;">✨{title.ljust(tlimit)}</h4><p style="text-align:left; font-size:11px; white-space:pre-wrap;">{content.ljust(climit)}</p></span>';
             }}
         }}
     </script>
@@ -65,3 +72,27 @@ def change_button_style(widget_label:str, title:str, content:str) -> None:
 
     components.html(button_style, height=0, width=0)
     
+def change_button_style_image(widget_label:str, title:str, imageurl:str) -> None:
+    """
+    Args:
+        widget_label
+        title
+        imageurl
+    """
+    button_style = f"""
+    <script>
+        var elements = window.parent.document.querySelectorAll('button');
+        for (var i = 0; i < elements.length; i++) {{
+            if (elements[i].innerText == '{widget_label}') {{
+                elements[i].style.padding = '5px';
+                elements[i].style.margin = '0px';
+                elements[i].style.borderRadius = '5px';
+                elements[i].style.border = '1px solid #e0e0e0';
+                elements[i].style.backgroundColor = '#f0f4f8';
+                elements[i].innerHTML = '<span><img src="{imageurl}" height = "150"/><p></p><p>{title}</p></span>';
+            }}
+        }}
+    </script>
+    """
+
+    components.html(button_style, height=0, width=0)
