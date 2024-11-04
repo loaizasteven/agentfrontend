@@ -13,11 +13,17 @@ sys.path.insert(0, osp.dirname(script_dir))
 from _ui.generaloptions import change_button_style, detect_browser, change_button_style_image
 
 
-def shuffle_tuple(t):
-    """Return a new tuple with elements shuffled."""
-    lst = list(t)  # Convert tuple to list
-    random.shuffle(lst)  # Shuffle list
-    return tuple(lst)  # Convert list back to tuple
+def shuffle_tuple(tup, fixed_elements=3, prob=0.2):
+    """Return a new tuple with elements shuffled, except for one element."""
+    if len(tup) <= fixed_elements:
+        return tup
+    
+    lst = list(tup)  # 
+    if random.random() < prob:  # probability to swap
+        index = random.randint(0, fixed_elements - 1)  # Select a random index from first (n) elements
+        swap = random.randint(fixed_elements, len(lst) - 1)  # Select a random index to swap 
+        lst[index] = lst[swap]  # Swap the selected element with the last element
+    return tuple(lst[:fixed_elements])  # Convert list back to tuple
 
 
 class ChatBotApp(BaseModel):
@@ -49,7 +55,7 @@ class ChatBotApp(BaseModel):
 
         styling = change_button_style if self.buttontype == 'text' else change_button_style_image
         cols = st.columns(len(self.buttons))
-        button_top3 = shuffle_tuple(self.buttons)[:3]
+        button_top3 = shuffle_tuple(self.buttons)
         for i, entry in enumerate(button_top3):   
             cols[i].button(entry[0], key=f"button_{i}")
             styling(entry[0], entry[0], entry[1])
@@ -86,8 +92,9 @@ if __name__=="__main__":
         """,
         buttons=(
             ('Claim-oween', 'https://images.pexels.com/photos/3095465/pexels-photo-3095465.png'),
-            ('Document Intelligence', 'https://images.pexels.com/photos/1109541/pexels-photo-1109541.jpeg'),
+            ('Doc Intelligence', 'https://images.pexels.com/photos/1109541/pexels-photo-1109541.jpeg'),
             ('Summarize', 'https://images.pexels.com/photos/699122/pexels-photo-699122.jpeg'),
+            ('Refactoring', 'https://images.pexels.com/photos/699122/pexels-photo-699122.jpeg'),
         ),
         buttontype='image'
     )
