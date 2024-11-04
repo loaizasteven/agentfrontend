@@ -13,7 +13,7 @@ sys.path.insert(0, osp.dirname(script_dir))
 from _ui.generaloptions import change_button_style, detect_browser, change_button_style_image
 
 
-def shuffle_tuple(tup, fixed_elements=3, prob=0.2):
+def shuffle_tuple(tup, fixed_elements=3, prob=0.40):
     """Return a new tuple with elements shuffled, except for one element."""
     if len(tup) <= fixed_elements:
         return tup
@@ -54,9 +54,11 @@ class ChatBotApp(BaseModel):
         st.write(self.description)
 
         styling = change_button_style if self.buttontype == 'text' else change_button_style_image
-        cols = st.columns(len(self.buttons))
-        button_top3 = shuffle_tuple(self.buttons)
-        for i, entry in enumerate(button_top3):   
+        
+        button_topn = shuffle_tuple(self.buttons)
+        cols = st.columns(len(button_topn))
+
+        for i, entry in enumerate(button_topn):   
             cols[i].button(entry[0], key=f"button_{i}")
             styling(entry[0], entry[0], entry[1])
 
