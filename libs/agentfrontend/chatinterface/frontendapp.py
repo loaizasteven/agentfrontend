@@ -2,7 +2,8 @@ import streamlit as st
 
 import os.path as osp
 import sys
-import uuid
+
+import random
 
 from pydantic import BaseModel
 from typing import Optional
@@ -10,6 +11,13 @@ from typing import Optional
 script_dir = osp.dirname(__file__)
 sys.path.insert(0, osp.dirname(script_dir))
 from _ui.generaloptions import change_button_style, detect_browser, change_button_style_image
+
+
+def shuffle_tuple(t):
+    """Return a new tuple with elements shuffled."""
+    lst = list(t)  # Convert tuple to list
+    random.shuffle(lst)  # Shuffle list
+    return tuple(lst)  # Convert list back to tuple
 
 
 class ChatBotApp(BaseModel):
@@ -41,7 +49,8 @@ class ChatBotApp(BaseModel):
 
         styling = change_button_style if self.buttontype == 'text' else change_button_style_image
         cols = st.columns(len(self.buttons))
-        for i, entry in enumerate(self.buttons):   
+        button_top3 = shuffle_tuple(self.buttons)[:3]
+        for i, entry in enumerate(button_top3):   
             cols[i].button(entry[0], key=f"button_{i}")
             styling(entry[0], entry[0], entry[1])
 
