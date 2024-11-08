@@ -1,9 +1,10 @@
 import requests
 import json
 
-class VpicClient:
-    def __init__(self):
-        self.api_url = "https://vpic.nhtsa.dot.gov/api/"
+from pydantic import BaseModel
+
+class VpicClient(BaseModel):
+    api_url: str = "https://vpic.nhtsa.dot.gov/api/"
 
     # Get details by VIN
     def get_details_by_vin(self, vin, year, format="json"):
