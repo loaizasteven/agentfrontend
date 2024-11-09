@@ -36,6 +36,7 @@ class ChatBotApp(BaseModel):
         ('Button 3', 'This is my short instruction content, with multiline instruction', None),
     )
     buttontype: str = 'text'
+    conversation_memory: int = 4
     
     def _apppagedefault(self, title="Claim AI", icon="🦜"):
         st.set_page_config(
@@ -46,6 +47,10 @@ class ChatBotApp(BaseModel):
         with st.sidebar:
             st.title('🦜 Claim AI')
             st.write("⛶  New Conversation")
+
+    def _shorttermmemory(self):
+        "Static Method to store chat history"
+        st.session_state['message'] = st.session_state['message'][-self.conversation_memory:]
 
     @staticmethod
     def _setstate(session, state):
@@ -101,6 +106,7 @@ class ChatBotApp(BaseModel):
             self._zcheck
         else:
             self._setstate(session='message', state=[])
+            self._shorttermmemory()
             self._apppagedefault()
             self._render()
             self._zcheck()
