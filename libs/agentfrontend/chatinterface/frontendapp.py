@@ -136,11 +136,10 @@ class ChatBotApp(BaseModel):
         user_input = vin_year_extract_mask(st.session_state["vin_input"], mask_only=True)
         st.session_state['message'].append({"role": "user", "content": f'{user_input}'})
         st.session_state['message'].append({"role": "assistant", "content": vehicle_details(st.session_state["vin_input"])})    
-    
+
     def vin_decode(self):
         assistant_message = {"role": "assistant", "content": "Please provide the VIN number and the year of the vehicle."}
         st.session_state['message'].append(assistant_message)
-        st.session_state['input_disabled'] = True
 
         st.chat_input("Enter VIN number and year...", key="vin_input", on_submit=self.run_extraction)
 
