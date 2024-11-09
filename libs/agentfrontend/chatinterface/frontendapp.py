@@ -27,19 +27,30 @@ def shuffle_tuple(tup, fixed_elements=3, prob=0.20):
         lst[index] = lst[swap]  # Swap the selected element with the last element
     return tuple(lst[:fixed_elements])  # Convert list back to tuple
 
-def vin_year_extract(text: str, partial: bool = True) -> tuple:
+def vin_year_extract_mask(text: str, partial: bool = True, mask_only: bool = False) -> tuple:
     """
-    Extracts VIN and year from a given text.
+    Extracts VIN and year from a given text and masks the VIN.
+    
     Args:
         text (str): Input text containing VIN and year.
+        partial (bool): Whether to return partial VIN (11 digits). Defaults to True.
+        mask_only (bool): Whether to return masked text instead of VIN and year. Defaults to False.
+    
     Returns:
-        tuple: A tuple containing the extracted (partial) VIN and year, or (None, None) if not found.
+        tuple or str: A tuple containing the extracted (partial) VIN and year, 
+                      or the original text with masked VIN if mask_only is True.
+                      Returns (None, None) if not found.
     """
     vin_pattern = re.search(r'\b[A-HJ-NPR-Z0-9]{17}\b', text)
     year_pattern = re.search(r'\b(19|20)\d{2}\b', text)
+    
     if vin_pattern and year_pattern:
-        vin = vin_pattern.group()[:11]
-        return vin[:8] + '*' + vin[9:] if partial else vin_pattern.group(), year_pattern.group()
+        vin = vin_pattern.group()
+        masked_vin = vin[:8] + '*' + vin[9:11]
+        if mask_only:
+            return re.sub(vin_pattern.group(), masked_vin, text)
+        else:
+            return (masked_vin[:11] if partial else vin, year_pattern.group())
     else:
         return None, None
     
@@ -51,7 +62,7 @@ def vehicle_details(text:str) -> str:
     Returns:
         str: A string containing the vehicle details.
     """
-    vin, year = vin_year_extract(text)
+    vin, year = vin_year_extract_mask(text)
     if vin and year:
         client = VpicClient()
         details = client.get_details_by_vin(vin, year)
@@ -125,10 +136,10 @@ class ChatBotApp(BaseModel):
 
     @staticmethod
     def run_extraction():
-        vin, year = vin_year_extract(st.session_state["vin_input"])
-        st.session_state['message'].append({"role": "user", "content": f'vin: {vin}, year: {year}'})
+        user_input = vin_year_extract_mask(st.session_state["vin_input"], mask_only=True)
+        st.session_state['message'].append({"role": "user", "content": f'{user_input}'})
         st.session_state['message'].append({"role": "assistant", "content": vehicle_details(st.session_state["vin_input"])})    
-        
+    
     def vin_decode(self):
         assistant_message = {"role": "assistant", "content": "Please provide the VIN number and the year of the vehicle."}
         st.session_state['message'].append(assistant_message)
