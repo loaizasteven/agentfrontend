@@ -13,7 +13,7 @@ sys.path.insert(0, osp.dirname(script_dir))
 from _ui.generaloptions import change_button_style, detect_browser, change_button_style_image
 
 
-def shuffle_tuple(tup, fixed_elements=3, prob=0.40):
+def shuffle_tuple(tup, fixed_elements=3, prob=0.20):
     """Return a new tuple with elements shuffled, except for one element."""
     if len(tup) <= fixed_elements:
         return tup
