@@ -42,6 +42,22 @@ def vin_year_extract(text: str, partial: bool = True) -> tuple:
         return vin[:8] + '*' + vin[9:] if partial else vin_pattern.group(), year_pattern.group()
     else:
         return None, None
+    
+def vehicle_details(text:str) -> str:
+    """
+    Extracts vehicle details from a given text.
+    Args:
+        text (str): Input text containing VIN and year.
+    Returns:
+        str: A string containing the vehicle details.
+    """
+    vin, year = vin_year_extract(text)
+    if vin and year:
+        client = VpicClient()
+        details = client.get_details_by_vin(vin, year)
+        if details.status_code == 200:
+            return details.json()
+    return "No details found."
 
 class ChatBotApp(BaseModel):
     title: str = 'My First LLM Chat'
@@ -108,11 +124,18 @@ class ChatBotApp(BaseModel):
                 st.markdown(message["content"])
 
     @staticmethod
-    def vin_decode():
+    def run_extraction():
+        vin, year = vin_year_extract(st.session_state["vin_input"])
+        st.session_state['message'].append({"role": "user", "content": f'vin: {vin}, year: {year}'})
+        st.session_state['message'].append({"role": "assistant", "content": vehicle_details(st.session_state["vin_input"])})    
+        
+    def vin_decode(self):
         assistant_message = {"role": "assistant", "content": "Please provide the VIN number and the year of the vehicle."}
         st.session_state['message'].append(assistant_message)
         st.session_state['input_disabled'] = True
-        st.chat_input("Enter VIN number and year...", key="vin_input")
+
+        st.chat_input("Enter VIN number and year...", key="vin_input", on_submit=self.run_extraction)
+
 
     @staticmethod
     def _zcheck():
