@@ -93,10 +93,10 @@ if __name__=="__main__":
         respond to customers needs within a single application.
         """,
         buttons=(
-            ('Claim-oween', 'https://images.pexels.com/photos/3095465/pexels-photo-3095465.png'),
             ('Doc Intelligence', 'https://images.pexels.com/photos/1109541/pexels-photo-1109541.jpeg'),
             ('Summarize', 'https://images.pexels.com/photos/699122/pexels-photo-699122.jpeg'),
-            ('Refactoring', 'https://images.pexels.com/photos/699122/pexels-photo-699122.jpeg'),
+            ('VIN Decoding', 'https://www.shutterstock.com/image-vector/magnifying-glass-car-selling-icon-600nw-431692936.jpg'),
+            ('Claim-oween', 'https://images.pexels.com/photos/3095465/pexels-photo-3095465.png'),
         ),
         buttontype='image'
     )
