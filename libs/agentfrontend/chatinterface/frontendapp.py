@@ -65,10 +65,7 @@ def vehicle_details(text:str) -> str:
     vin, year = vin_year_extract_mask(text)
     if vin and year:
         client = VpicClient()
-        details = client.get_details_by_vin(vin, year)
-        if details.status_code == 200:
-            return details.json()
-    return "No details found."
+        return client.get_short_details_by_vin(vin, year)
 
 class ChatBotApp(BaseModel):
     title: str = 'My First LLM Chat'

@@ -10,6 +10,21 @@ class VpicClient(BaseModel):
     def get_details_by_vin(self, vin, year, format="json"):
         return self.send_request(f"/vehicles/DecodeVinValues/{vin}?format={format}&modelyear={year}")
 
+    def get_short_details_by_vin(self, vin, year, format="json"):
+        response = self.get_details_by_vin(vin, year, format)
+        if response.status_code == 200:
+            data = response.json()
+            if "Results" in data:
+                results = data["Results"][0]
+                return {
+                    "apiMessage": data["Message"],
+                    "make": results["Make"],
+                    "model": results["Model"],
+                    "year": results["ModelYear"],
+                    "gvwr": results["GVWR"],
+                    "basePrice": results["BasePrice"]
+                }
+
     # Send a GET request to the vPIC API
     def send_request(self, endpoint):
         url = f"{self.api_url}{endpoint}"
