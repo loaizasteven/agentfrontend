@@ -3,6 +3,11 @@ import json
 
 from pydantic import BaseModel
 
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from _api import openaichat
+
 class VpicClient(BaseModel):
     api_url: str = "https://vpic.nhtsa.dot.gov/api/"
 
@@ -24,6 +29,16 @@ class VpicClient(BaseModel):
                     "gvwr": results["GVWR"],
                     "basePrice": results["BasePrice"]
                 }
+        else:
+            return {
+                "status_code": response.status_code,
+                "status_message": response.reason
+            }
+    
+    def get_vehicle_details_summary(self, vin, year, format="json"):
+        response = self.get_short_details_by_vin(vin, year, format)
+        return openaichat.vehicle_detail_summary(response)
+        
 
     # Send a GET request to the vPIC API
     def send_request(self, endpoint):
@@ -31,7 +46,7 @@ class VpicClient(BaseModel):
         response = requests.get(url)
 
         return response
-
+    
 
 # Usage
 if __name__ == "__main__":
