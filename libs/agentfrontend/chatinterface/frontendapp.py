@@ -6,12 +6,14 @@ import sys
 import random
 
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, Any
 
 script_dir = osp.dirname(__file__)
 sys.path.insert(0, osp.dirname(script_dir))
 from _ui.generaloptions import change_button_style, detect_browser, change_button_style_image
 
+from _api.vpic import VpicClient
+import re
 
 def shuffle_tuple(tup, fixed_elements=3, prob=0.20):
     """Return a new tuple with elements shuffled, except for one element."""
@@ -25,6 +27,21 @@ def shuffle_tuple(tup, fixed_elements=3, prob=0.20):
         lst[index] = lst[swap]  # Swap the selected element with the last element
     return tuple(lst[:fixed_elements])  # Convert list back to tuple
 
+def vin_year_extract(text: str, partial: bool = True) -> tuple:
+    """
+    Extracts VIN and year from a given text.
+    Args:
+        text (str): Input text containing VIN and year.
+    Returns:
+        tuple: A tuple containing the extracted (partial) VIN and year, or (None, None) if not found.
+    """
+    vin_pattern = re.search(r'\b[A-HJ-NPR-Z0-9]{17}\b', text)
+    year_pattern = re.search(r'\b(19|20)\d{2}\b', text)
+    if vin_pattern and year_pattern:
+        vin = vin_pattern.group()[:11]
+        return vin[:8] + '*' + vin[9:] if partial else vin_pattern.group(), year_pattern.group()
+    else:
+        return None, None
 
 class ChatBotApp(BaseModel):
     title: str = 'My First LLM Chat'
@@ -37,6 +54,7 @@ class ChatBotApp(BaseModel):
     )
     buttontype: str = 'text'
     conversation_memory: int = 4
+    vinclient: Any = VpicClient
     
     def _apppagedefault(self, title="Claim AI", icon="🦜"):
         st.set_page_config(
@@ -74,10 +92,10 @@ class ChatBotApp(BaseModel):
             cols[i].button(title, key=f"button_{i}", on_click=getattr(self, action) if action else None)
             styling(title, title, render_object)
 
-        prompt = st.chat_input("How can I help?")
-        if prompt:
+        st.chat_input("Ask me anything...", key="chat_input", disabled=st.session_state.get("input_disabled", False))
+        if st.session_state.get("chat_input"):
             default_response = "Hi, this is a default bot response. I am still learning."
-            user_message = {"role": "user", "content": prompt}
+            user_message = {"role": "user", "content": st.session_state["chat_input"]}
             assistant_message = {"role": "assistant", "content": default_response}
 
             st.session_state['message'].append(user_message)
@@ -93,6 +111,8 @@ class ChatBotApp(BaseModel):
     def vin_decode():
         assistant_message = {"role": "assistant", "content": "Please provide the VIN number and the year of the vehicle."}
         st.session_state['message'].append(assistant_message)
+        st.session_state['input_disabled'] = True
+        st.chat_input("Enter VIN number and year...", key="vin_input")
 
     @staticmethod
     def _zcheck():
@@ -106,6 +126,7 @@ class ChatBotApp(BaseModel):
             self._zcheck
         else:
             self._setstate(session='message', state=[])
+            self._setstate(session='input_disabled', state=False)
             self._shorttermmemory()
             self._apppagedefault()
             self._render()
