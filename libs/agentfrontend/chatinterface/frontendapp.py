@@ -36,7 +36,7 @@ class ChatBotApp(BaseModel):
         ('Button 3', 'This is my short instruction content, with multiline instruction', None),
     )
     buttontype: str = 'text'
-
+    
     def _apppagedefault(self, title="Claim AI", icon="🦜"):
         st.set_page_config(
             page_title = title,
@@ -46,6 +46,11 @@ class ChatBotApp(BaseModel):
         with st.sidebar:
             st.title('🦜 Claim AI')
             st.write("⛶  New Conversation")
+
+    @staticmethod
+    def _setstate(session, state):
+        if session not in st.session_state:
+            st.session_state[session] = state
 
     def _render(self):
         "Renders the chatbot UI"
@@ -60,15 +65,29 @@ class ChatBotApp(BaseModel):
 
         for i, entry in enumerate(button_topn):   
             title, render_object, action = entry
-            cols[i].button(title, key=f"button_{i}", on_click=action)
+                # Add more conditions for other actions if needed
+            cols[i].button(title, key=f"button_{i}", on_click=getattr(self, action) if action else None)
             styling(title, title, render_object)
 
         prompt = st.chat_input("How can I help?")
         if prompt:
-            with st.chat_message("user"):
-                st.write(f"User has sent the following prompt: {prompt}")
-            with st.chat_message("assistant"):
-                st.write("Hello 👋, I am the Assistant")
+            default_response = "Hi, this is a default bot response. I am still learning."
+            user_message = {"role": "user", "content": prompt}
+            assistant_message = {"role": "assistant", "content": default_response}
+
+            st.session_state['message'].append(user_message)
+            st.session_state['message'].append(assistant_message)
+        
+        # Display chat history on app rerun
+        chat_history = st.session_state.get("message", [])
+        for message in chat_history:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+
+    @staticmethod
+    def vin_decode():
+        assistant_message = {"role": "assistant", "content": "Please provide the VIN number and the year of the vehicle."}
+        st.session_state['message'].append(assistant_message)
 
     @staticmethod
     def _zcheck():
@@ -81,6 +100,7 @@ class ChatBotApp(BaseModel):
             self._render
             self._zcheck
         else:
+            self._setstate(session='message', state=[])
             self._apppagedefault()
             self._render()
             self._zcheck()
@@ -96,7 +116,7 @@ if __name__=="__main__":
         buttons=(
             ('Doc Intelligence', 'https://images.pexels.com/photos/1109541/pexels-photo-1109541.jpeg', None),
             ('Summarize', 'https://images.pexels.com/photos/699122/pexels-photo-699122.jpeg', None),
-            ('VIN Decoding', 'https://www.shutterstock.com/image-vector/magnifying-glass-car-selling-icon-600nw-431692936.jpg', None),
+            ('VIN Decoding', 'https://www.shutterstock.com/image-vector/magnifying-glass-car-selling-icon-600nw-431692936.jpg', 'vin_decode'),
             ('Claim-oween', 'https://images.pexels.com/photos/3095465/pexels-photo-3095465.png', None),
         ),
         buttontype='image'
