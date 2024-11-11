@@ -12,8 +12,7 @@ script_dir = osp.dirname(__file__)
 sys.path.insert(0, osp.dirname(script_dir))
 from _ui.generaloptions import change_button_style, detect_browser, change_button_style_image
 
-from _api.vpic import VpicClient
-import re
+from _api.vpic import VpicClient, vin_year_extract_mask, vehicle_details
 
 def shuffle_tuple(tup, fixed_elements=3, prob=0.20):
     """Return a new tuple with elements shuffled, except for one element."""
@@ -26,46 +25,7 @@ def shuffle_tuple(tup, fixed_elements=3, prob=0.20):
         swap = random.randint(fixed_elements, len(lst) - 1)  # Select a random index to swap 
         lst[index] = lst[swap]  # Swap the selected element with the last element
     return tuple(lst[:fixed_elements])  # Convert list back to tuple
-
-def vin_year_extract_mask(text: str, partial: bool = True, mask_only: bool = False) -> tuple:
-    """
-    Extracts VIN and year from a given text and masks the VIN.
     
-    Args:
-        text (str): Input text containing VIN and year.
-        partial (bool): Whether to return partial VIN (11 digits). Defaults to True.
-        mask_only (bool): Whether to return masked text instead of VIN and year. Defaults to False.
-    
-    Returns:
-        tuple or str: A tuple containing the extracted (partial) VIN and year, 
-                      or the original text with masked VIN if mask_only is True.
-                      Returns (None, None) if not found.
-    """
-    vin_pattern = re.search(r'\b[A-HJ-NPR-Z0-9]{17}\b', text)
-    year_pattern = re.search(r'\b(19|20)\d{2}\b', text)
-    
-    if vin_pattern and year_pattern:
-        vin = vin_pattern.group()
-        masked_vin = vin[:8] + '*' + vin[9:11]
-        if mask_only:
-            return re.sub(vin_pattern.group(), masked_vin, text)
-        else:
-            return (masked_vin[:11] if partial else vin, year_pattern.group())
-    else:
-        return None, None
-    
-def vehicle_details(text:str) -> str:
-    """
-    Extracts vehicle details from a given text.
-    Args:
-        text (str): Input text containing VIN and year.
-    Returns:
-        str: A string containing the vehicle details.
-    """
-    vin, year = vin_year_extract_mask(text)
-    if vin and year:
-        client = VpicClient()
-        return client.get_vehicle_details_summary(vin, year)
 
 class ChatBotApp(BaseModel):
     title: str = 'My First LLM Chat'

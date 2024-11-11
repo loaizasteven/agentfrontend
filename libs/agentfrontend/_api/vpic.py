@@ -5,9 +5,52 @@ from pydantic import BaseModel
 
 import sys
 import os
+import re
+
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 from _api import openaichat
 
+def vin_year_extract_mask(text: str, partial: bool = True, mask_only: bool = False) -> tuple:
+    """
+    Extracts VIN and year from a given text and masks the VIN.
+    
+    Args:
+        text (str): Input text containing VIN and year.
+        partial (bool): Whether to return partial VIN (11 digits). Defaults to True.
+        mask_only (bool): Whether to return masked text instead of VIN and year. Defaults to False.
+    
+    Returns:
+        tuple or str: A tuple containing the extracted (partial) VIN and year, 
+                      or the original text with masked VIN if mask_only is True.
+                      Returns (None, None) if not found.
+    """
+    vin_pattern = re.search(r'\b[A-HJ-NPR-Z0-9]{17}\b', text)
+    year_pattern = re.search(r'\b(19|20)\d{2}\b', text)
+    
+    if vin_pattern and year_pattern:
+        vin = vin_pattern.group()
+        masked_vin = vin[:8] + '*' + vin[9:11]
+        if mask_only:
+            return re.sub(vin_pattern.group(), masked_vin, text)
+        else:
+            return (masked_vin[:11] if partial else vin, year_pattern.group())
+    else:
+        return None, None
+    
+def vehicle_details(text:str) -> str:
+    """
+    Extracts vehicle details from a given text.
+    Args:
+        text (str): Input text containing VIN and year.
+    Returns:
+        str: A string containing the vehicle details.
+    """
+    vin, year = vin_year_extract_mask(text)
+    if vin and year:
+        client = VpicClient()
+        return client.get_vehicle_details_summary(vin, year)
+    
+    
 class VpicClient(BaseModel):
     api_url: str = "https://vpic.nhtsa.dot.gov/api/"
 
